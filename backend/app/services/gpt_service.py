@@ -19,15 +19,30 @@ def analyze_documents(cv_content, job_description):
             model="gpt-4",
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"CV:\n{cv_content}\n\nJob Description:\n{job_description}\n\nGenerate 5-7 specific interview questions that test the candidate's experience and suitability for this role."}
+                {"role": "user", "content": f"CV:\n{cv_content}\n\nJob Description:\n{job_description}\n\nGenerate 5-7 specific interview questions that test the candidate's experience and suitability for this role. For each question, provide 3-4 bullet points of suggested talking points/answers based on the candidate's CV. Format your response as JSON with the following structure:\n\n{{\n  \"questions\": [\n    {{\n      \"question\": \"The interview question\",\n      \"bullet_points\": [\n        \"First talking point based on CV\",\n        \"Second talking point based on CV\",\n        \"Third talking point based on CV\"\n      ]\n    }}\n  ]\n}}"}
             ]
         )
         
-        questions_text = response.choices[0].message['content']
-        # Split into individual questions and clean them up
-        questions = [q.strip() for q in questions_text.split('\n') if q.strip() and (q.strip()[0].isdigit() or q.strip().startswith('-'))]
+        response_text = response.choices[0].message['content']
         
-        return questions
+        # Try to parse JSON response
+        try:
+            response_data = json.loads(response_text)
+            return response_data.get('questions', [])
+        except json.JSONDecodeError:
+            # Fallback: parse as plain text and create structure
+            questions_text = response_text
+            questions = [q.strip() for q in questions_text.split('\n') if q.strip() and (q.strip()[0].isdigit() or q.strip().startswith('-'))]
+            
+            # Convert to new format for backward compatibility
+            formatted_questions = []
+            for question in questions:
+                formatted_questions.append({
+                    "question": question,
+                    "bullet_points": ["Review your relevant experience", "Prepare specific examples", "Practice your delivery"]
+                })
+            return formatted_questions
+        
     except Exception as e:
         print(f"Error calling OpenAI API: {str(e)}")
         return []
