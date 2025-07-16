@@ -9,6 +9,10 @@ function FileUpload({ onQuestionsReceived }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Submit called');
+    console.log('CV:', cv);
+    console.log('Job Description:', jobDescription);
+    
     if (!cv || !jobDescription) {
       setError('Please select both CV and job description files');
       return;
@@ -20,6 +24,11 @@ function FileUpload({ onQuestionsReceived }) {
     const formData = new FormData();
     formData.append('cv', cv);
     formData.append('jobDescription', jobDescription);
+    
+    console.log('FormData entries:');
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
 
     try {
       const response = await axios.post('/api/analyze', formData, {
@@ -27,10 +36,16 @@ function FileUpload({ onQuestionsReceived }) {
           'Content-Type': 'multipart/form-data',
         },
       });
+      console.log('Response:', response.data);
       onQuestionsReceived(response.data.questions);
     } catch (err) {
-      setError('Error analyzing files. Please try again.');
-      console.error('Error:', err);
+      console.error('Error details:', err);
+      if (err.response) {
+        console.error('Response data:', err.response.data);
+        setError(err.response.data.error || 'Error analyzing files. Please try again.');
+      } else {
+        setError('Network error. Please check your connection and try again.');
+      }
     } finally {
       setLoading(false);
     }
