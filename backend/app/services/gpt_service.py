@@ -6,7 +6,7 @@ import os
 # Set the OpenAI API key
 openai.api_key = Config.OPENAI_API_KEY
 
-def analyze_documents(cv_content, job_description):
+def analyze_documents(cv_content, job_description, question_type="general"):
     try:
         # Load instructions from file
         instructions_path = os.path.join('app', 'instructions.json')
@@ -15,11 +15,50 @@ def analyze_documents(cv_content, job_description):
         
         system_prompt = instructions['system_prompt']
         
+        # Define question type specific instructions
+        question_type_instructions = {
+            "general": "Generate a mix of general interview questions covering background, motivation, and role fit.",
+            "technical": "Focus on technical skills, programming challenges, system design, and job-specific technical knowledge. Include coding scenarios or technical problem-solving questions if relevant.",
+            "competency": "Create competency-based (behavioral) questions using the STAR method. Focus on past experiences, achievements, and how they handled specific situations like teamwork, leadership, and problem-solving.",
+            "leadership": "Generate questions about leadership experience, team management, conflict resolution, decision-making, and motivating others.",
+            "situational": "Create hypothetical scenario-based questions relevant to the role. Focus on how they would handle specific workplace situations and challenges.",
+            "culture_fit": "Generate questions about work style, values, team collaboration, company culture alignment, and work-life balance preferences."
+        }
+        
+        # Get specific instructions for the question type
+        type_instruction = question_type_instructions.get(question_type, question_type_instructions["general"])
+        
+        user_prompt = f"""CV:
+{cv_content}
+
+Job Description:
+{job_description}
+
+QUESTION TYPE: {question_type.upper()}
+Focus: {type_instruction}
+
+Generate 6-8 specific {question_type} interview questions that test the candidate's experience and suitability for this role. For each question, provide 3-4 bullet points of suggested talking points/answers based on the candidate's CV.
+
+Format your response as JSON with the following structure:
+
+{{
+  "questions": [
+    {{
+      "question": "The interview question",
+      "bullet_points": [
+        "First talking point based on CV",
+        "Second talking point based on CV",
+        "Third talking point based on CV"
+      ]
+    }}
+  ]
+}}"""
+        
         response = openai.ChatCompletion.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"CV:\n{cv_content}\n\nJob Description:\n{job_description}\n\nGenerate 5-7 specific interview questions that test the candidate's experience and suitability for this role. For each question, provide 3-4 bullet points of suggested talking points/answers based on the candidate's CV. Format your response as JSON with the following structure:\n\n{{\n  \"questions\": [\n    {{\n      \"question\": \"The interview question\",\n      \"bullet_points\": [\n        \"First talking point based on CV\",\n        \"Second talking point based on CV\",\n        \"Third talking point based on CV\"\n      ]\n    }}\n  ]\n}}"}
+                {"role": "user", "content": user_prompt}
             ]
         )
         

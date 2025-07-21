@@ -1,9 +1,20 @@
 import React from 'react';
 
-function Questions({ questions }) {
+function Questions({ questions, questionType }) {
   if (!questions || questions.length === 0) {
     return null;
   }
+
+  const questionTypeLabels = {
+    'general': '🎯 General Questions',
+    'technical': '💻 Technical Questions',
+    'competency': '🎪 Competency-Based Questions',
+    'leadership': '👑 Leadership Questions',
+    'situational': '🎭 Situational Questions',
+    'culture_fit': '🤝 Culture Fit Questions'
+  };
+
+  const questionTypeLabel = questionTypeLabels[questionType] || '🎯 Interview Questions';
 
   // Handle both old format (array of strings) and new format (array of objects)
   const formatQuestions = (questions) => {
@@ -33,7 +44,12 @@ function Questions({ questions }) {
 
   return (
     <div className="questions">
-      <h2>Generated Interview Questions</h2>
+      <div className="questions-header">
+        <h2>{questionTypeLabel}</h2>
+        <p className="questions-subtitle">
+          {formattedQuestions.length} tailored questions with personalized talking points
+        </p>
+      </div>
       <div className="questions-container">
         {formattedQuestions.map((item, index) => (
           <div key={index} className="question-card">

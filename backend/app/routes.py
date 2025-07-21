@@ -50,6 +50,7 @@ def extract_text_from_file(file):
 def analyze():
     print("Analyze endpoint called")
     print(f"Request files: {list(request.files.keys())}")
+    print(f"Request form data: {dict(request.form)}")
     
     if 'cv' not in request.files or 'jobDescription' not in request.files:
         print("Missing files in request")
@@ -57,9 +58,11 @@ def analyze():
 
     cv = request.files['cv']
     job_description = request.files['jobDescription']
+    question_type = request.form.get('questionType', 'general')  # Get question type from form data
     
     print(f"CV filename: {cv.filename}")
     print(f"Job description filename: {job_description.filename}")
+    print(f"Question type: {question_type}")
 
     if cv.filename == '' or job_description.filename == '':
         print("Empty filenames")
@@ -79,7 +82,7 @@ def analyze():
             return jsonify({'error': 'Could not extract text from uploaded files. Please ensure they contain readable text.'}), 400
         
         print("Calling GPT service...")
-        questions = analyze_documents(cv_content, job_description_content)
+        questions = analyze_documents(cv_content, job_description_content, question_type)
         print(f"Generated {len(questions)} questions")
         return jsonify({'questions': questions})
         

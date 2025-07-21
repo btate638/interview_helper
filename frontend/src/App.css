@@ -285,6 +285,54 @@ main {
   font-size: 1rem;
 }
 
+.question-type-wrapper {
+  margin-bottom: 1rem;
+}
+
+.question-type-select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #2d3748;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 20px;
+  padding-right: 40px;
+}
+
+.question-type-select:hover {
+  border-color: #667eea;
+  background: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.question-type-select:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.question-type-description {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #718096;
+  font-style: italic;
+  padding: 0.5rem;
+  background: #f7fafc;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+}
+
 .file-input-wrapper {
   position: relative;
   display: inline-block;
@@ -375,6 +423,18 @@ main {
 .questions h2::before {
   content: "🎯";
   font-size: 1.5rem;
+}
+
+.questions-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.questions-subtitle {
+  color: #718096;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+  font-weight: 500;
 }
 
 .questions-list {

@@ -6,7 +6,15 @@ import './App.css';
 
 function App() {
   const [questions, setQuestions] = useState([]);
+  const [questionType, setQuestionType] = useState('general');
   const [activeTab, setActiveTab] = useState('upload');
+
+  const handleQuestionsReceived = (newQuestions, type) => {
+    setQuestions(newQuestions);
+    if (type) {
+      setQuestionType(type);
+    }
+  };
 
   return (
     <div className="App">
@@ -30,8 +38,8 @@ function App() {
       <main>
         {activeTab === 'upload' ? (
           <>
-            <FileUpload onQuestionsReceived={setQuestions} />
-            <Questions questions={questions} />
+            <FileUpload onQuestionsReceived={handleQuestionsReceived} />
+            <Questions questions={questions} questionType={questionType} />
           </>
         ) : (
           <Chat />
